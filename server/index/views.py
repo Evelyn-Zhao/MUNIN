@@ -128,25 +128,9 @@ def manageExpDetail(request):
 #not fully implemented, need to call the user table and exp_relation table 
 def getExperimentList(request):
     a = []
-    dirsCheck(settings.EXP_DIRS)
-    if(len(glob.glob(settings.EXP_DIRS+'/*.json'))>0):
-        
-        for jsonfile in glob.glob(settings.EXP_DIRS+'/*.json'):
-       
-            e = {
-                "expid": "",
-                "expname": "",
-                "exptype": "",
-                "description":"",
-            }
-            
-            with open(jsonfile, encoding='utf-8', mode='r') as f:
-                data = json.load(f)
-                e["expid"] = data["expid"]
-                e["expname"] = data["expname"]
-                e["exptype"] = data["exptype"]
-                e["description"] = data["description"]
-            a.append(e)
+    explist = Experiment.objects.filter(deleted = False).values()
+    for exp in explist:
+        a.append(exp)
     return JsonResponse({ 'exps': a })
 
 def newexp(request):
@@ -163,7 +147,7 @@ def newexp(request):
         "data": [],
         "outcomes": []
     }
-    
+
     try:
         # split the experimenters string by comma
         experimenter_list = request.POST["expers"].split(",")
