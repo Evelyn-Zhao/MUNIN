@@ -150,15 +150,14 @@ def getExperimentList(request):
     return JsonResponse({ 'exps': a })
 
 def newexp(request):
-    #TODO: need to unify the content retrieved from webpage and the information stored in the JSON object
-    #expid, expname, and exptype are stored in both db and json file
-    #the rest attributes are stored in the json file only
+    #expid, expname, and exptype are stored in db
     json_object = {
         "expid": 0,
         "expname": request.POST["expname"],
         "exptype": request.POST["exptype"],
         "related_exps": [],
-        "expperiod": request.POST["expperiod"],
+        "expstartd":request.POST["expstartd"],
+        "expendd":request.POST["expendd"],
         "description": request.POST["expdescription"],
         "experimenters": [],
         "data": [],
@@ -169,17 +168,14 @@ def newexp(request):
     #one row of data requires an id and exp_name 
     try:
         #cannot specify the expid why? delete is delete, that's it 
-        exp = Experiment.objects.create(expname = request.POST["expname"], exptype = request.POST["exptype"])
         
-        # TODO: need to split the experimenters string by comma
+        
+        # split the experimenters string by comma
         experimenter_list = request.POST["expers"].split(",")
         print(experimenter_list)
-        # TODO: then verify whether user already exists in the db, if not create user
+        # then verify whether user already exists in the db, if not create user
         for exper in experimenter_list:
             exper_names = exper.strip().split(" ")
-            print(exper_names)
-            print(exper_names[0])
-            print(exper_names[1])
             if Users.objects.filter(usrfirstname = exper_names[0], usrlastname = exper_names[1]).exists():
                 experimenter = Users.objects.filter(usrfirstname = exper_names[0], usrlastname = exper_names[1]).values()[0]
                 print("experimenter exists")
@@ -190,6 +186,7 @@ def newexp(request):
                 usr = Users.objects.create(usrname = name, usrpwd = "123456",usremail = " " ,usrauthority = 1, usrfirstname = exper_names[0], usrlastname = exper_names[1])
                 usr = usr.__dict__
                 json_object["experimenters"].append(usr['usrname'])
+        exp = Experiment.objects.create(expname = request.POST["expname"], exptype = request.POST["exptype"], expstartd = request.POST["expstartd"], expendd = request.POST["expendd"], expdescription = request.POST["expdescription"])
         print(json_object)
     except Exception as e:
         print(e)
@@ -200,10 +197,10 @@ def newexp(request):
             del response["_state"]
         print(response)
         #also need to create a json file with corresponding id name, and store the data in the json file 
-        json_object["expid"] = response['expid']
-        dirsCheck(settings.EXP_DIRS)
-        with open(settings.EXP_DIRS + "/Exp_" + str(response["expid"])+".json", 'w') as outfile:
-            json.dump(json_object, outfile)
+        #json_object["expid"] = response['expid']
+        #dirsCheck(settings.EXP_DIRS)
+        #with open(settings.EXP_DIRS + "/Exp_" + str(response["expid"])+".json", 'w') as outfile:
+        #    json.dump(json_object, outfile)
         return JsonResponse(response)
     
 def register(request):
