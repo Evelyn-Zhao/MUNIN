@@ -1,0 +1,13 @@
+{
+    "expid": 17,
+    "expname": "Exp_TestCase",
+    "exptype": "Available",
+    "related_exps": [],
+    "expperiod": "2019 S1",
+    "description": "This experiment is created for test purpose",
+    "experimenters": [
+        "evelyn"
+    ],
+    "data": [],
+    "outcomes": []
+}
