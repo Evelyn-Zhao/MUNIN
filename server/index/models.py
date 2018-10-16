@@ -25,12 +25,6 @@ class Experiment (models.Model):
     #if deleted is true, the record will not show up 
     deleted = models.BooleanField(default=False)
 
-class Data (models.Model):
-    dataid = models.IntegerField(primary_key=True) 
-    datatype = models.CharField(max_length=50)
-    datadescription = models.CharField(max_length=400)
-    expid = models.ForeignKey(Experiment, on_delete=models.CASCADE)
-    related_data = ArrayField(models.IntegerField())
 
 class Outcome (models.Model):
     outid = models.IntegerField(primary_key=True) 
@@ -45,10 +39,21 @@ class Participant (models.Model):
     age = models.IntegerField()
     occupation = models.CharField(max_length=30)
 
-class Participant_Experiment (models.Model):
+class ParticipantExperiment (models.Model):
     exp_partid = models.IntegerField(primary_key=True) 
     expid = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     partid = models.ForeignKey(Participant, on_delete=models.CASCADE)
-    video_recorded = models.BooleanField(default = False)
-    audio_recorded = models.BooleanField(default = False)
-    
+
+class Equipment (models.Model):
+    equipid = models.IntegerField(primary_key=True) 
+    equipname = models.CharField(max_length=200)
+
+
+class Data (models.Model):
+    dataid = models.IntegerField(primary_key=True) 
+    datatype = models.CharField(max_length=50)
+    datadescription = models.CharField(max_length=400)
+    expid = models.ForeignKey(Experiment , on_delete=models.CASCADE)
+    exp_partid = models.ForeignKey(ParticipantExperiment, on_delete=models.CASCADE)
+    quipid = models.ForeignKey(Equipment, on_delete=models.CASCADE)
+    related_data = ArrayField(models.IntegerField())
