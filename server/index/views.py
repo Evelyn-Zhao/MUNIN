@@ -163,16 +163,12 @@ def newexp(request):
         "data": [],
         "outcomes": []
     }
-
-    #create a new exp in Experiment table
-    #one row of data requires an id and exp_name 
+    
     try:
-        #cannot specify the expid why? delete is delete, that's it 
-        
-        
         # split the experimenters string by comma
         experimenter_list = request.POST["expers"].split(",")
         print(experimenter_list)
+
         # then verify whether user already exists in the db, if not create user
         for exper in experimenter_list:
             exper_names = exper.strip().split(" ")
@@ -186,7 +182,9 @@ def newexp(request):
                 usr = Users.objects.create(usrname = name, usrpwd = "123456",usremail = " " ,usrauthority = 1, usrfirstname = exper_names[0], usrlastname = exper_names[1])
                 usr = usr.__dict__
                 json_object["experimenters"].append(usr['usrname'])
-        exp = Experiment.objects.create(expname = request.POST["expname"], exptype = request.POST["exptype"], expstartd = request.POST["expstartd"], expendd = request.POST["expendd"], expdescription = request.POST["expdescription"])
+        
+        #create a new exp in Experiment table
+        exp = Experiment.objects.create(expname = request.POST["expname"], exptype = request.POST["exptype"], expstartd = request.POST["expstartd"], expendd = request.POST["expendd"], expdescription = request.POST["expdescription"], experimenters = json_object["experimenters"])
         print(json_object)
     except Exception as e:
         print(e)
