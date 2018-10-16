@@ -12,7 +12,8 @@ class ManageExps extends Component {
         types: ["Closed","Ongoing","Available"],
         expname: undefined,
         exptype: "Closed",
-        expperiod: undefined,
+        expstartd: undefined,
+        expendd: undefined,
         expdescription: undefined,
         expers: undefined,
         cexps: undefined,
@@ -32,7 +33,8 @@ class ManageExps extends Component {
 
     selectDate = (date, dateString) =>{
         console.log(date, dateString);
-        this.state.expperiod = dateString
+        this.state.expstartd = dateString[0]
+        this.state.expendd = dateString[1]
     }
 
     editExp =  async () =>{
@@ -74,14 +76,14 @@ class ManageExps extends Component {
     }
 
     submit = async () => {
-        console.log([this.state.expname, this.state.expperiod, this.state.expdescription, this.state.exptype]);
-        if (this.state.expname !== "" && (this.state.expperiod !== "" && this.state.expdescription !== "" && this.state.exptype !== "")){
+        //console.log([this.state.expname, this.state.expperiod, this.state.expdescription, this.state.exptype]);
+        if (this.state.expname !== "" && (this.state.expstartd !== "" && this.state.expendd !== "" && this.state.expdescription !== "" && this.state.exptype !== "")){
             try{
                 console.log([this.state.expname, this.state.expperiod]);
                 const response = await fetch('/newexp', {
                     method: 'POST',
                     mode: 'cors',
-                    body: `expname=${this.state.expname}&expperiod=${this.state.expperiod}&expdescription=${this.state.expdescription}&expers=${this.state.expers}&exptype=${this.state.exptype}`,
+                    body: `expname=${this.state.expname}&expstartd=${this.state.expstartd}&expendd=${this.state.expendd}&expdescription=${this.state.expdescription}&expers=${this.state.expers}&exptype=${this.state.exptype}`,
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
