@@ -20,9 +20,9 @@ class Experiment (models.Model):
     expendd = models.DateField()
     expdescription = models.CharField(max_length=2000)
     experimenters = ArrayField(models.CharField(max_length=200))
-    related_exps = ArrayField(models.IntegerField())
-    generated_data = ArrayField(models.IntegerField())
-    outcomes = ArrayField(models.IntegerField())
+    related_exps = ArrayField(models.IntegerField(), blank=True)
+    generated_data = ArrayField(models.IntegerField(), blank=True)
+    outcomes = ArrayField(models.IntegerField(), blank=True)
     #if deleted is true, the record will not show up 
     deleted = models.BooleanField(default=False)
 

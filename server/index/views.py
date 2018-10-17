@@ -136,12 +136,12 @@ def getExperimentList(request):
 def newexp(request):
     #expid, expname, and exptype are stored in db
     json_object = {
-        "expid": 0,
+    #    "expid": 0,
         "expname": request.POST["expname"],
         "exptype": request.POST["exptype"],
         "related_exps": [],
-        "expstartd":request.POST["expstartd"],
-        "expendd":request.POST["expendd"],
+        "expstartd": request.POST["expstartd"],
+        "expendd": request.POST["expendd"],
         "description": request.POST["expdescription"],
         "experimenters": [],
         "data": [],
@@ -151,7 +151,7 @@ def newexp(request):
     try:
         # split the experimenters string by comma
         experimenter_list = request.POST["expers"].split(",")
-        print(experimenter_list)
+       
 
         # then verify whether user already exists in the db, if not create user
         for exper in experimenter_list:
@@ -168,7 +168,10 @@ def newexp(request):
                 json_object["experimenters"].append(usr['usrname'])
         
         #create a new exp in Experiment table
-        exp = Experiment.objects.create(expname = request.POST["expname"], exptype = request.POST["exptype"], expstartd = request.POST["expstartd"], expendd = request.POST["expendd"], expdescription = request.POST["expdescription"], experimenters = json_object["experimenters"])
+        exp = Experiment.objects.create(expname = request.POST["expname"], exptype = request.POST["exptype"], 
+                                        expstartd = request.POST["expstartd"], expendd = request.POST["expendd"], 
+                                        expdescription = request.POST["expdescription"], experimenters = json_object["experimenters"], 
+                                        related_exps = [], generated_data=[], outcomes = [])
         print(json_object)
     except Exception as e:
         print(e)
