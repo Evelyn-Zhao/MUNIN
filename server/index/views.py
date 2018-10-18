@@ -93,20 +93,26 @@ def claim(request):
     id = request.GET['id']
     tmp = {}
     if 'usrname' in request.session:
-        with open(settings.EXP_DIRS+'/Exp_'+str(id)+'.json', mode='r') as f:
-            data = json.load(f)
+        exptoclaim = Experiment.objects.filter(expid = id).values()[0]
+        for exper in exptoclaim['experimenters']:
+        #with open(settings.EXP_DIRS+'/Exp_'+str(id)+'.json', mode='r') as f:
+        #    data = json.load(f)
             user_exist = False
-            for exp in data["experimenters"]:
+            #for exp in data["experimenters"]:
+            for exp in exper:
                 if exp == request.session['usrname']:
                     user_exist = True
                     
             if user_exist:
                 return JsonResponse({'message': 'You are already the experimenter of this experiment'})
             else:
-                data["experimenters"].append(request.session['usrname'])
-                tmp = data
-        with open(settings.EXP_DIRS+'/Exp_'+str(id)+'.json', mode='w') as outfile:
-            json.dump(tmp, outfile)
+                tmp = exptoclaim['experimenters']
+                tmp.append(request.session['usrname'])
+                exptoclaim['experimenters'] = tmp
+                #data["experimenters"].append(request.session['usrname'])
+                #tmp = data
+        #with open(settings.EXP_DIRS+'/Exp_'+str(id)+'.json', mode='w') as outfile:
+        #    json.dump(tmp, outfile)
             return JsonResponse({'message': 'Claim Successfully'})
 
 
@@ -124,7 +130,6 @@ def manageExpDetail(request):
     #if 'usrname' in request.session:
     return JsonResponse({'error': 'error occurred'})
 
-
 #not fully implemented, need to call the user table and exp_relation table 
 def getExperimentList(request):
     a = []
@@ -136,7 +141,6 @@ def getExperimentList(request):
 def newexp(request):
     #expid, expname, and exptype are stored in db
     json_object = {
-    #    "expid": 0,
         "expname": request.POST["expname"],
         "exptype": request.POST["exptype"],
         "related_exps": [],
@@ -152,7 +156,6 @@ def newexp(request):
         # split the experimenters string by comma
         experimenter_list = request.POST["expers"].split(",")
        
-
         # then verify whether user already exists in the db, if not create user
         for exper in experimenter_list:
             exper_names = exper.strip().split(" ")
@@ -181,11 +184,6 @@ def newexp(request):
         if "_state" in response:
             del response["_state"]
         print(response)
-        #also need to create a json file with corresponding id name, and store the data in the json file 
-        #json_object["expid"] = response['expid']
-        #dirsCheck(settings.EXP_DIRS)
-        #with open(settings.EXP_DIRS + "/Exp_" + str(response["expid"])+".json", 'w') as outfile:
-        #    json.dump(json_object, outfile)
         return JsonResponse(response)
     
 def register(request):
