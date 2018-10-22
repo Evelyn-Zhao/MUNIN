@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.db import connection, IntegrityError
 from django.http import HttpResponse, JsonResponse
 from django.http import FileResponse
-from index.models import Users, Experiment,Data
+from index.models import Users, Experiment, Data, UserExperiment, Outcome, Participant, ParticipantExperiment, Equipment
 from django.conf import settings
 from index.support import *
 import json, os, glob
@@ -174,10 +174,18 @@ def newexp(request):
                 json_object["experimenters"].append(usr['usrname'])
         
         #create a new exp in Experiment table
-        exp = Experiment.objects.create(expname = request.POST["expname"], exptype = request.POST["exptype"], 
+        #exp = Experiment.objects.create(expname = request.POST["expname"], exptype = request.POST["exptype"], 
+        #                                expstartd = request.POST["expstartd"], expendd = request.POST["expendd"], 
+        #                                expdescription = request.POST["expdescription"], experimenters = json_object["experimenters"], 
+        #                                related_exps = [], generated_data=[], outcomes = [])
+        exp = Experiment(expname = request.POST["expname"], exptype = request.POST["exptype"], 
                                         expstartd = request.POST["expstartd"], expendd = request.POST["expendd"], 
                                         expdescription = request.POST["expdescription"], experimenters = json_object["experimenters"], 
                                         related_exps = [], generated_data=[], outcomes = [])
+        exp.save()
+        #for each experiment and experimenter pair, create a relationship
+        for ele in json_object["experimenters"]:
+            UserExperiment.objects.create(expid = exp, usrid = Users.objects.filter(usrname = ele).first())
         print(json_object)
     except Exception as e:
         print(e)

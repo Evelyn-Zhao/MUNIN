@@ -26,32 +26,41 @@ class Experiment (models.Model):
     #if deleted is true, the record will not show up 
     deleted = models.BooleanField(default=False)
 
+class UserExperiment(models.Model):
+    usr_expid = models.AutoField(primary_key=True) 
+    expid = models.ForeignKey(Experiment, on_delete=models.CASCADE)
+    usrid = models.ForeignKey(Users, on_delete=models.CASCADE)
+
+class ExpManager(models.Manager):
+    def get_exp_by_id(self, id):
+        return self.filter(expid = id)
+
 
 class Outcome (models.Model):
-    outid = models.IntegerField(primary_key=True) 
+    outid = models.AutoField(primary_key=True) 
     outtype = models.CharField(max_length=50)
     outdescription = models.CharField(max_length=400)
     expid = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     related_out = ArrayField(models.IntegerField())
 
 class Participant (models.Model):
-    partid = models.IntegerField(primary_key=True) 
+    partid = models.AutoField(primary_key=True) 
     gender = models.CharField(max_length=12)
     age = models.IntegerField()
     occupation = models.CharField(max_length=30)
 
 class ParticipantExperiment (models.Model):
-    exp_partid = models.IntegerField(primary_key=True) 
+    exp_partid = models.AutoField(primary_key=True) 
     expid = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     partid = models.ForeignKey(Participant, on_delete=models.CASCADE)
 
 class Equipment (models.Model):
-    equipid = models.IntegerField(primary_key=True) 
+    equipid = models.AutoField(primary_key=True) 
     equipname = models.CharField(max_length=200)
 
 
 class Data (models.Model):
-    dataid = models.IntegerField(primary_key=True) 
+    dataid = models.AutoField(primary_key=True) 
     datatype = models.CharField(max_length=50)
     datadescription = models.CharField(max_length=400)
     expid = models.ForeignKey(Experiment , on_delete=models.CASCADE)
