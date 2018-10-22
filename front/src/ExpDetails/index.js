@@ -49,9 +49,9 @@ export default class ExpDetails extends Component {
                         <h3 style = {{textAlign:"left"}} >Experiment Type</h3>
                         <p style={{marginLeft: 30}}>{details.exptype}</p>
                         <h3 style = {{textAlign:"left"}}>Description</h3>
-                        <p style={{marginLeft: 30}}>{details.description}</p>
+                        <p style={{marginLeft: 30}}>{details.expdescription}</p>
                         <h3 style = {{textAlign:"left"}}>Experiment Period</h3>
-                        <p style={{marginLeft: 30}}>{details.expperiod}</p>
+                        <p style={{marginLeft: 30}}>{details.expstartd} ~ {details.expendd}</p>
                         
                         <h3 style = {{textAlign:"left"}} >Experimenters</h3>
                         <p style={{marginLeft: 30}}>{details.experimenters.map (exper => <p>{exper}</p>)}</p>

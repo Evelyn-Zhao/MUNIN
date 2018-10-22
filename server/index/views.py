@@ -52,29 +52,31 @@ def downloadData(request):
 
 def getExpDetails(request):
     id = request.GET['id']
-    exp = Experiment.objects.filter(expid = id).values()[0]
-    exp_full_path = settings.EXP_DIRS+'/Exp_'+str(id)+'.json'
-    dirsCheck(settings.EXP_DIRS)
-    #try:
-    with open(exp_full_path) as f:
-        data = json.load(f)
+    try:
+        exp = Experiment.objects.filter(expid = id).values()[0]
+    
+        data = exp
         experimeters = []
         datainfo=[]
-        for exp in data["experimenters"]:
-            user = Users.objects.filter(usrname = exp).values()[0]
+
+        #get each experimenter's details
+        for exper in exp["experimenters"]:
+            user = Users.objects.filter(usrname = exper).values()[0]
             experimeters.append(user['usrfirstname']+" "+user['usrlastname'])
         data["experimenters"] = experimeters
-        for dataele in data["data"]:
+
+        #get each data details
+        for dataele in data["generated_data"]:
             datalist = {}
             d = Data.objects.filter(dataid = dataele).values()[0]
             datalist["dataid"] = dataele
             datalist["datadescription"] = d["datadescription"]
             datainfo.append(datalist)
-        data["data"] = datainfo
-    return JsonResponse(data)
-    #except Exception as e:
-        #print("error occurred")
-        #return JsonResponse({'error': 'experiment does not exist, please check the file system.'})
+        data["generated_data"] = datainfo
+        return JsonResponse(data)
+    except Exception as e:
+        print("error occurred")
+        return JsonResponse({'error': 'experiment does not exist, please check the file system.'})
 
 def getAllMyExp(request):
     if 'usrname' in request.session:
@@ -113,7 +115,8 @@ def claim(request):
                 #tmp = data
         #with open(settings.EXP_DIRS+'/Exp_'+str(id)+'.json', mode='w') as outfile:
         #    json.dump(tmp, outfile)
-            return JsonResponse({'message': 'Claim Successfully'})
+        #TODO: provide a feedback message for claiming successfully
+                return JsonResponse({'message': 'Claim Successfully'})
 
 
 def getAllClaimableExp(request):

@@ -32,8 +32,10 @@ class ManageExps extends Component {
     }
 
     selectDate = (date, dateString) =>{
-        console.log(date, dateString);
-        this.state.expstartd = dateString[0]
+        
+        //console.log("the first dtring is"+dateString[0])
+        //console.log(dateString[1])
+        this.setState({expstartd :dateString[0]})
         this.state.expendd = dateString[1]
     }
 
@@ -76,10 +78,10 @@ class ManageExps extends Component {
     }
 
     submit = async () => {
-        //console.log([this.state.expname, this.state.expperiod, this.state.expdescription, this.state.exptype]);
+        console.log([this.state.expname, this.state.expstartd, this.state.expendd, this.state.expdescription, this.state.exptype]);
         if (this.state.expname !== "" && (this.state.expstartd !== "" && this.state.expendd !== "" && this.state.expdescription !== "" && this.state.exptype !== "")){
             try{
-                console.log([this.state.expname, this.state.expperiod]);
+                console.log([this.state.expname, this.state.expstartd]);
                 const response = await fetch('/newexp', {
                     method: 'POST',
                     mode: 'cors',
