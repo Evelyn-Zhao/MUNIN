@@ -81,17 +81,35 @@ def getExpDetails(request):
 def getAllMyExp(request):
     if 'usrname' in request.session:
         myexps = []
-        for jsonfile in glob.glob(settings.EXP_DIRS+'/*.json'):
-            print(jsonfile)
-            with open(jsonfile, encoding='utf-8', mode='r') as f:
-                data = json.load(f)
-                for experimenter in data["experimenters"]:
-                    if experimenter == request.session['usrname']:
-                        myexps.append(data)
+        #TODO: get user's experiment list by querying the TABLE userexperiment
+        exps = UserExperiment.objects.filter(usrid = Users.objects.filter(usrname = request.session['usrname']).first()).values()
+        for exp in exps:
+            print(exp)
+            #when junction object is created, require to pass the whole object (FK) into the query
+            #when junction object is retrieved, only the id of FK object is returned
+            #wired!
+            print(exp['expid_id'])
+            exp_object = Experiment.objects.filter(expid = exp['expid_id']).first()
+            #TODO: When the retrieved objects are not serialisable?
+            exp_object = exp_object.__dict__
+            if "_state" in exp_object:
+                del exp_object["_state"]
+            print(exp_object)
+            myexps.append(exp_object)
+        
+        #for jsonfile in glob.glob(settings.EXP_DIRS+'/*.json'):
+        #    print(jsonfile)
+        #    with open(jsonfile, encoding='utf-8', mode='r') as f:
+        #        data = json.load(f)
+        #        for experimenter in data["experimenters"]:
+        #            if experimenter == request.session['usrname']:
+        #                myexps.append(data)
     return JsonResponse({'myexps': myexps})
 
 def claim(request):
-    #TODO: Add experimenter's name into experimenter list
+    #Add experimenter's name into experimenter list
+    #Also add one object in userexperiment table
+
     id = request.GET['id']
     tmp = {}
     if 'usrname' in request.session:
@@ -111,6 +129,7 @@ def claim(request):
                 tmp = exptoclaim['experimenters']
                 tmp.append(request.session['usrname'])
                 exptoclaim['experimenters'] = tmp
+
                 #data["experimenters"].append(request.session['usrname'])
                 #tmp = data
         #with open(settings.EXP_DIRS+'/Exp_'+str(id)+'.json', mode='w') as outfile:
