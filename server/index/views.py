@@ -122,7 +122,7 @@ def claim(request):
             for exp in exper:
                 if exp == request.session['usrname']:
                     user_exist = True
-                    
+            print(user_exist)
             if user_exist:
                 return JsonResponse({'message': 'You are already the experimenter of this experiment'})
             else:
@@ -136,7 +136,8 @@ def claim(request):
         #    json.dump(tmp, outfile)
         #TODO: provide a feedback message for claiming successfully
                 return JsonResponse({'message': 'Claim Successfully'})
-
+    else:
+        return JsonResponse({'message': 'Login is required'})
 
 def getAllClaimableExp(request):
     #TODO: only experiments with valide json exp file can be presented

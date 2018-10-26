@@ -19,6 +19,7 @@ class Experiment (models.Model):
     expstartd = models.DateField()
     expendd = models.DateField()
     expdescription = models.CharField(max_length=2000)
+    #TODO: experimenter attri is removed as junction table is created
     experimenters = ArrayField(models.CharField(max_length=200))
     related_exps = ArrayField(models.IntegerField(), blank=True)
     generated_data = ArrayField(models.IntegerField(), blank=True)
