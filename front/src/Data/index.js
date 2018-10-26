@@ -44,7 +44,6 @@ export default class Data extends Component {
                     <table className="Exp-table">
                         <tbody>
                             <tr className="Exp-th">
-                                <th style = {{"width": "50px"}}className="Exp-th">Number</th>
                                 <th className="Exp-th">Description</th>
                                 <th style = {{"width": "150px"}}className="Exp-th">Data Type</th>
                                 <th style = {{"width": "150px"}}className="Exp-th">Generate From</th>
@@ -52,7 +51,7 @@ export default class Data extends Component {
                             {
                                 this.state.dataList && this.state.dataList.map(e =>
                                     <tr className="Exp-th">
-                                        <td className="Exp-th">{e.dataid}</td>
+                                        
                                         <td className="Exp-th">{e.datadescription}</td>
                                         <td className="Exp-th">{e.datatype}</td>
                                         <td className="Exp-th"><Link to={'/experiments/' + e.exp_id}>{'Experiment ' + e.exp_id}</Link></td>

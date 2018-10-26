@@ -5,7 +5,7 @@ import './AppBar.css';
 import AppLogin from '../AppLogin';
 import NaviBar from '../NaviBar';
 import { Avatar } from 'antd';
-import { Menu, Icon } from 'antd';
+import { Menu, Icon, Dropdown } from 'antd';
 import { Link } from 'react-router-dom'
 class AppBar extends Component {
     async componentDidMount() {
@@ -80,7 +80,14 @@ class AppBar extends Component {
         if (this.state.user) {
             console.log(this.state);
             const SubMenu = Menu.SubMenu;
-        const MenuItemGroup = Menu.ItemGroup;
+            const MenuItemGroup = Menu.ItemGroup;
+            const menu = (
+                <Menu>
+                    <Menu.Item><Link to ='/editPersonalInfo'>Personal Account</Link></Menu.Item>
+                    <Menu.Item>Help</Menu.Item>
+                    <Menu.Item onClick={this.logout}><Link to ='/'>Log Out</Link></Menu.Item>
+                </Menu>
+              );
             return  [
                     <div className = "AppBar-navi-and-user">
                         <Menu onClick={this.handleClick} mode="horizontal">
@@ -97,17 +104,11 @@ class AppBar extends Component {
                                 <Menu.Item key="11" onClick={this.logout}><Link to ='/'>Log Out</Link></Menu.Item>
                             </SubMenu>
                         </Menu>
-                        <Avatar shape="square" size="large" style={{ color: '#f56a00', backgroundColor: '#fde3cf', paddingLeft: '140px', marginLeft:'200px' }}> <Icon type="user" theme="outlined" />{this.state.user.usrname} </Avatar>
+                        <Dropdown overlay={menu}>
+                            <Avatar shape="square" size="large" style={{ color: '#f56a00', backgroundColor: '#fde3cf', paddingLeft: '140px', marginLeft:'200px' }}> <Icon type="user" theme="outlined" />{this.state.user.usrname} </Avatar>
+                        </Dropdown>
                     </div>
-                  //  <a key = {1} className = "AppBar-username-label"> Hi, {this.state.user.usrname} 
-                  //      <ul>
-                  //          <li onClick={this.manageExps}>Manage Experiments</li>
-                  //          <li onClick={this.managePersonalInfo}>Manage Personal Information</li>
-                  //          <li onClick={this.logout}>Log Out</li>
-                            
-                  //      </ul>
-                        
-                  //   </a>
+        
             ];
         } else {
             return  [

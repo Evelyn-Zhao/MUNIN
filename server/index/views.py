@@ -15,7 +15,7 @@ import urllib
 
 def getDataList(request):
     data = Data.objects.all()
-    
+    #TODO: need to rertrieve the expid outof partexp id
     a = []
     for d in data:
         item = serialise_object(d)

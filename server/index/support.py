@@ -1,5 +1,5 @@
 from django.conf import settings
-from index.models import Users, Experiment, UserExperiment
+from index.models import Users, Experiment, UserExperiment, ParticipantExperiment, Data
 import os
 
 def dirsCheck(path):
@@ -21,7 +21,7 @@ def get_usr_by_exp(para_expid):
     #when junction object is created, require to pass the whole object (FK) into the query
     #when junction object is retrieved, only the id of FK object is returned
     #wired!
-    usrexps = UserExperiment.objects.filter(expid = Experiment.objects.filter(expid = para_expid).first()).values()
+    usrexps = UserExperiment.objects.filter(expid = Experiment.objects.get(expid = para_expid)).values()
     for usrexp in usrexps:
         usr_object = Users.objects.get(usrname = usrexp['usrid_id'])
         experimenters.append(usr_object.usrfirstname+" "+usr_object.usrlastname)
@@ -43,7 +43,7 @@ def get_exp_by_usr(para_usrid):
     #when junction object is created, require to pass the whole object (FK) into the query
     #when junction object is retrieved, only the id of FK object is returned
     #wired!
-    usrexps = UserExperiment.objects.filter(usrid = Users.objects.filter(usrname = para_usrid).first()).values()
+    usrexps = UserExperiment.objects.filter(usrid = Users.objects.get(usrname = para_usrid)).values()
     for usrexp in usrexps:
         exp_object = Experiment.objects.get(expid = usrexp['expid_id'])
         experiments.append(exp_object.expid)
@@ -51,13 +51,17 @@ def get_exp_by_usr(para_usrid):
 
 def get_data_by_exp(exp_object):
     datainfo=[]
-    for data_object_id in exp_object.generated_data:
-        data_dicobject = {}
-        data_object = Data.objects.get(dataid = data_object_id)
-        #TODO: more attributes could be returned, need to be implemented
-        data_dicobject["dataid"] = data_object_id
-        data_dicobject["datadescription"] = data_object.datadescription
-        datainfo.append(data_dicobject)
+    #get all the part_exp objects
+    partexp_objects = ParticipantExperiment.objects.filter(expid = exp_object).values()
+    for partexp_object in partexp_objects:
+        data_objects = Data.objects.filter(exp_partid = partexp_object['exp_partid']).values()
+        for data_object in data_objects:
+            data_dicobject = {}
+            #data_object = Data.objects.get(dataid = data_object_id)
+            #TODO: more attributes could be returned, need to be implemented
+            data_dicobject["dataid"] = data_object.id
+            data_dicobject["datadescription"] = data_object.datadescription
+            datainfo.append(data_dicobject)
     return datainfo
 
 def serialise_object(obj):
