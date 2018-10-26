@@ -20,8 +20,8 @@ export default class ExpDetails extends Component {
                 print("dkfbhfb")
                 message.info("experiment does not exist, please check the file system.")
             }
-            console.log(data)
-            this.setState({details:data})
+            console.log(data.data)
+            this.setState({details:data.data})
         } catch (e) { }
     }
 

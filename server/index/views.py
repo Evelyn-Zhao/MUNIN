@@ -56,7 +56,8 @@ def downloadData(request):
 def getExpDetails(request):
     id = request.GET['id']
     try:
-        exp = Experiment.objects.filter(expid = id).values()[0]
+        """
+        exp = Experiment.objects.get(expid = id).values()[0]
     
         data = exp
         experimeters = []
@@ -76,28 +77,34 @@ def getExpDetails(request):
             datalist["datadescription"] = d["datadescription"]
             datainfo.append(datalist)
         data["generated_data"] = datainfo
-        return JsonResponse(data)
+        """
+        data = get_exp_by_id(id)
+        data = data.__dict__
+        if "_state" in data:
+            del data["_state"]
+        
+        return JsonResponse({'data':data})
     except Exception as e:
-        print("error occurred")
+        print("error occurred:"+str(e))
         return JsonResponse({'error': 'experiment does not exist, please check the file system.'})
 
 def getAllMyExp(request):
-    if 'usrname' in request.session:
-        myexps = []
-        #get user's experiment list by querying the TABLE userexperiment
-        exps = UserExperiment.objects.filter(usrid = Users.objects.get(usrname = request.session['usrname'])).values()
-        
-        for exp in exps:
 
-            exp_object = Experiment.objects.filter(expid = exp['expid_id']).first()
+    myexps = []
+
+    if 'usrname' in request.session:
+        expids = get_exp_by_usr(request.session['usrname'])
+        for id in expids:
+            exp_object = Experiment.objects.get(expid = id)
             #TODO: When the retrieved objects are not serialisable?
             exp_object = exp_object.__dict__
             if "_state" in exp_object:
                 del exp_object["_state"]
-            print(exp_object)
             myexps.append(exp_object)
         
-    return JsonResponse({'myexps': myexps})
+        return JsonResponse({'myexps': myexps})
+    else:
+        return JsonResponse({'message': 'Login is required'}) 
 
 def claim(request):
     #Add experimenter's name into experimenter list
