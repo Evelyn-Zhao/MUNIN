@@ -27,15 +27,18 @@ def get_usr_by_exp(para_expid):
         experimenters.append(usr_object.usrfirstname+" "+usr_object.usrlastname)
     return experimenters
 
-"""
-@param : usrname
-@type : number
-
-@return : a list of experiment id having the usr as the experimenter
-@type: list of number
-
-"""
+   
 def get_exp_by_usr(para_usrid):
+
+    """
+    this function is used for returning the user object according to the expid
+    @param : usrname
+    @type : number
+
+    @return : a list of experiment id having the usr as the experimenter
+    @type: list of number
+
+    """
     experiments = []
     #when junction object is created, require to pass the whole object (FK) into the query
     #when junction object is retrieved, only the id of FK object is returned
@@ -56,3 +59,9 @@ def get_data_by_exp(exp_object):
         data_dicobject["datadescription"] = data_object.datadescription
         datainfo.append(data_dicobject)
     return datainfo
+
+def serialise_object(obj):
+    obj = obj.__dict__
+    if "_state" in obj:
+        del obj["_state"]
+    return obj

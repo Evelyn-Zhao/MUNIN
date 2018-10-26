@@ -64,7 +64,7 @@ class Data (models.Model):
     dataid = models.AutoField(primary_key=True) 
     datatype = models.CharField(max_length=50)
     datadescription = models.CharField(max_length=400)
-    expid = models.ForeignKey(Experiment , on_delete=models.CASCADE)
+    #expid = models.ForeignKey(Experiment , on_delete=models.CASCADE)
     exp_partid = models.ForeignKey(ParticipantExperiment, on_delete=models.CASCADE)
     quipid = models.ForeignKey(Equipment, on_delete=models.CASCADE)
     related_data = ArrayField(models.IntegerField())

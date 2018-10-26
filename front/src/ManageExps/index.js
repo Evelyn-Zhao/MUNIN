@@ -33,8 +33,6 @@ class ManageExps extends Component {
 
     selectDate = (date, dateString) =>{
         
-        //console.log("the first dtring is"+dateString[0])
-        //console.log(dateString[1])
         this.setState({expstartd :dateString[0]})
         this.state.expendd = dateString[1]
     }
@@ -167,17 +165,17 @@ class ManageExps extends Component {
                         <table>
                             <tbody>
                                 <tr >
-                                    <th className="Exp-th">Experiment ID</th>
-                                    <th className="Exp-th">Name</th>
+                                    <th className="Exp-th">Experiment Name</th>
                                     <th className="Exp-th">Type</th>
+                                    <th className="Exp-th">Click to Edit</th>
                                 </tr>
                                 {
                                     this.state.myexps && this.state.myexps.map(d =>                         
                                 
                                     <tr className="Exp-th">
-                                        <td className="Exp-th">{d.expid}</td>
-                                        <td className="Exp-th"><Link to={'/experiments/' + d.expid}>{d.expname}</Link></td>
+                                        <td className="ManageApp-claim-expname"><Link to={'/experiments/' + d.expid}>{d.expname}</Link></td>
                                         <td className="Exp-th">{d.exptype}</td>
+                                        <td className="Exp-th"><a> <Icon type="edit" theme="filled" /> Edit </a></td>
                                     </tr>)
                                 }
                             </tbody>
@@ -191,8 +189,8 @@ class ManageExps extends Component {
                     <table>
                     <tbody>
                          <tr >
-                            <th className="Exp-th">Exp ID</th>
-                            <th className="Exp-th">Name</th>
+                            
+                            <th className="Exp-th">Experiment Name</th>
                             <th className="Exp-th">Type</th>
                             <th className="Exp-th">Click to Claim</th>
                         </tr>
@@ -200,10 +198,11 @@ class ManageExps extends Component {
                             this.state.cexps && this.state.cexps.map(d =>                         
                                 
                                 <tr className="Exp-th">
-                                        <td className="Exp-th">{d.expid}</td>
-                                        <td className="Exp-th"><Link to={'/experiments/' + d.expid}>{d.expname}</Link></td>
+                                       
+                                        <td className="ManageApp-claim-expname"><Link to={'/experiments/' + d.expid}>{d.expname}</Link></td>
                                         <td className="Exp-th">{d.exptype}</td>
-                                        <a className="Exp-th" href={'/claimExp?id=' + d.expid}> <Icon type="shopping-cart" theme="outlined" /> Claim </a>
+                                        
+                                        <td className="Exp-th"><a href={'/claimExp?id=' + d.expid}> <Icon type="shopping" theme="filled" /> Claim </a></td>
                                     
                                 </tr>
                             )

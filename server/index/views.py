@@ -18,10 +18,7 @@ def getDataList(request):
     
     a = []
     for d in data:
-        item = d.__dict__
-        if "_state" in item:
-            del item["_state"]
-        print(item)
+        item = serialise_object(d)
         a.append(item)
     return JsonResponse({ 'data': a })
 
@@ -53,13 +50,9 @@ def getExpDetails(request):
     id = request.GET['id']
     try:
         data = get_exp_by_id(id)
-        data = data.__dict__
-        if "_state" in data:
-            del data["_state"]
-        
+        data = serialise_object(data)
         return JsonResponse({'data':data})
     except Exception as e:
-        
         return JsonResponse({'error': 'experiment does not exist, please check the file system.'})
 
 def getAllMyExp(request):
@@ -71,9 +64,7 @@ def getAllMyExp(request):
         for id in expids:
             exp_object = Experiment.objects.get(expid = id)
             #TODO: When the retrieved objects are not serialisable?
-            exp_object = exp_object.__dict__
-            if "_state" in exp_object:
-                del exp_object["_state"]
+            exp_object = serialise_object(exp_object)
             myexps.append(exp_object)
         
         return JsonResponse({'myexps': myexps})
@@ -119,8 +110,10 @@ def getAllClaimableExp(request):
     cexps = []
     claimableExps = Experiment.objects.filter(exptype = "Available").values()
     for claimableExp in claimableExps:
-        print(claimableExp)
-        cexps.append(claimableExp)
+        exp_object = get_exp_by_id(claimableExp['expid'])
+        exp_object = serialise_object(exp_object)
+        cexps.append(exp_object)
+
     return JsonResponse({'cexps': cexps})
 
 
@@ -133,7 +126,9 @@ def getExperimentList(request):
     a = []
     explist = Experiment.objects.filter(deleted = False).values()
     for exp in explist:
-        a.append(exp)
+        exp_object = get_exp_by_id(exp['expid'])
+        exp_object = serialise_object(exp_object)
+        a.append(exp_object)
     return JsonResponse({ 'exps': a })
 
 def newexp(request):
@@ -177,9 +172,8 @@ def newexp(request):
         #for each experiment and experimenter pair, create a relationship
         for ele in json_object["experimenters"]:
             UserExperiment.objects.create(expid = exp, usrid = Users.objects.filter(usrname = ele).first())
-        print(json_object)
+        
     except Exception as e:
-        print(e)
         return JsonResponse({'error': 'error occurred'})
     else:
         response = exp.__dict__
@@ -226,15 +220,11 @@ def me(request):
         return JsonResponse({})
 
 def login(request):
-    #print(request.data)
-    #request.read()
-    #data = json.loads(request.body)
+    
     json_object = {
-        
         "username": request.POST["username"],
-        "password": request.POST["password"],
-        
-    }
+        "password": request.POST["password"],}
+
     try:
         user = Users.objects.filter(usrname = request.POST["username"]).values()[0]
         print(user)
