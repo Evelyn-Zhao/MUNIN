@@ -36,11 +36,7 @@ def downloadData(request):
     urlname = "Data_"+id+"."+filetype
     download_file_name = str(data["exp_id"])+"_"+id+"."+filetype
     full_data_path = settings.DATA_DIRS+urlname
-    #print(data)
-    #print(urlname)
-    #print(download_file_name)
-    #print(os.path.join(settings.DATA_DIRS, urlname))
-    #print(os.path.join(settings.DOWNLOAD_DIRS,download_file_name))
+   
     try:
         dirsCheck(full_data_path)
         file=open(full_data_path,'rb')
@@ -56,28 +52,6 @@ def downloadData(request):
 def getExpDetails(request):
     id = request.GET['id']
     try:
-        """
-        exp = Experiment.objects.get(expid = id).values()[0]
-    
-        data = exp
-        experimeters = []
-        datainfo=[]
-
-        #get each experimenter's details
-        for exper in exp["experimenters"]:
-            user = Users.objects.filter(usrname = exper).values()[0]
-            experimeters.append(user['usrfirstname']+" "+user['usrlastname'])
-        data["experimenters"] = experimeters
-
-        #get each data details
-        for dataele in data["generated_data"]:
-            datalist = {}
-            d = Data.objects.filter(dataid = dataele).values()[0]
-            datalist["dataid"] = dataele
-            datalist["datadescription"] = d["datadescription"]
-            datainfo.append(datalist)
-        data["generated_data"] = datainfo
-        """
         data = get_exp_by_id(id)
         data = data.__dict__
         if "_state" in data:
@@ -85,7 +59,7 @@ def getExpDetails(request):
         
         return JsonResponse({'data':data})
     except Exception as e:
-        print("error occurred:"+str(e))
+        
         return JsonResponse({'error': 'experiment does not exist, please check the file system.'})
 
 def getAllMyExp(request):
@@ -195,10 +169,6 @@ def newexp(request):
                 json_object["experimenters"].append(usr['usrname'])
         
         #create a new exp in Experiment table
-        #exp = Experiment.objects.create(expname = request.POST["expname"], exptype = request.POST["exptype"], 
-        #                                expstartd = request.POST["expstartd"], expendd = request.POST["expendd"], 
-        #                                expdescription = request.POST["expdescription"], experimenters = json_object["experimenters"], 
-        #                                related_exps = [], generated_data=[], outcomes = [])
         exp = Experiment(expname = request.POST["expname"], exptype = request.POST["exptype"], 
                                         expstartd = request.POST["expstartd"], expendd = request.POST["expendd"], 
                                         expdescription = request.POST["expdescription"], experimenters = json_object["experimenters"], 
