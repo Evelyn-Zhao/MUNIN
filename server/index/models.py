@@ -32,9 +32,9 @@ class UserExperiment(models.Model):
     expid = models.ForeignKey(Experiment, on_delete=models.CASCADE)
     usrid = models.ForeignKey(Users, on_delete=models.CASCADE)
 
-class ExpManager(models.Manager):
-    def get_exp_by_id(self, id):
-        return self.filter(expid = id)
+#class ExpManager(models.Manager):
+#    def get_exp_by_id(self, id):
+#        return self.filter(expid = id)
 
 
 class Outcome (models.Model):

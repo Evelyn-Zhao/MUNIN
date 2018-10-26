@@ -10,6 +10,9 @@ from pprint import pprint
 import urllib
 # Create your views here.
 
+#differences between filter and get: use get when a single object will be returned, use filter when more than one object will be returned
+#when is the returned object serialisable?
+
 def getDataList(request):
     data = Data.objects.all()
     
@@ -81,14 +84,11 @@ def getExpDetails(request):
 def getAllMyExp(request):
     if 'usrname' in request.session:
         myexps = []
-        #TODO: get user's experiment list by querying the TABLE userexperiment
-        exps = UserExperiment.objects.filter(usrid = Users.objects.filter(usrname = request.session['usrname']).first()).values()
+        #get user's experiment list by querying the TABLE userexperiment
+        exps = UserExperiment.objects.filter(usrid = Users.objects.get(usrname = request.session['usrname'])).values()
+        
         for exp in exps:
-            print(exp)
-            #when junction object is created, require to pass the whole object (FK) into the query
-            #when junction object is retrieved, only the id of FK object is returned
-            #wired!
-            print(exp['expid_id'])
+
             exp_object = Experiment.objects.filter(expid = exp['expid_id']).first()
             #TODO: When the retrieved objects are not serialisable?
             exp_object = exp_object.__dict__
@@ -97,13 +97,6 @@ def getAllMyExp(request):
             print(exp_object)
             myexps.append(exp_object)
         
-        #for jsonfile in glob.glob(settings.EXP_DIRS+'/*.json'):
-        #    print(jsonfile)
-        #    with open(jsonfile, encoding='utf-8', mode='r') as f:
-        #        data = json.load(f)
-        #        for experimenter in data["experimenters"]:
-        #            if experimenter == request.session['usrname']:
-        #                myexps.append(data)
     return JsonResponse({'myexps': myexps})
 
 def claim(request):
@@ -113,29 +106,30 @@ def claim(request):
     id = request.GET['id']
     tmp = {}
     if 'usrname' in request.session:
-        exptoclaim = Experiment.objects.filter(expid = id).values()[0]
-        for exper in exptoclaim['experimenters']:
-        #with open(settings.EXP_DIRS+'/Exp_'+str(id)+'.json', mode='r') as f:
-        #    data = json.load(f)
-            user_exist = False
-            #for exp in data["experimenters"]:
-            for exp in exper:
-                if exp == request.session['usrname']:
-                    user_exist = True
-            print(user_exist)
-            if user_exist:
-                return JsonResponse({'message': 'You are already the experimenter of this experiment'})
-            else:
-                tmp = exptoclaim['experimenters']
-                tmp.append(request.session['usrname'])
-                exptoclaim['experimenters'] = tmp
+        print(request.session['usrname'])
+        exptoclaim = Experiment.objects.get(expid = id)
+        user_exist = False
 
-                #data["experimenters"].append(request.session['usrname'])
-                #tmp = data
-        #with open(settings.EXP_DIRS+'/Exp_'+str(id)+'.json', mode='w') as outfile:
-        #    json.dump(tmp, outfile)
+        if exptoclaim.experimenters:
+            for exper in exptoclaim.experimenters: 
+                for exp in exper:
+                    if exp == request.session['usrname']:
+                        user_exist = True
+
+        if user_exist:
+            return JsonResponse({'message': 'You are already the experimenter of this experiment'})
+        else:
+            #update the experimenter data in the usr object
+            tmp = exptoclaim.experimenters
+            tmp.append(request.session['usrname'])
+            exptoclaim.experimenters = tmp
+            exptoclaim.save()
+            
+            #create an new object in UserExperiment table
+            UserExperiment.objects.create(expid = exptoclaim, usrid = Users.objects.get(usrname = request.session['usrname']))
+
         #TODO: provide a feedback message for claiming successfully
-                return JsonResponse({'message': 'Claim Successfully'})
+        return JsonResponse({'message': 'Claim Successfully'})
     else:
         return JsonResponse({'message': 'Login is required'})
 

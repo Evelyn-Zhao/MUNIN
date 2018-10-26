@@ -22,14 +22,28 @@ def get_exp_by_id(para_expid):
 
 def get_usr_by_exp(para_expid):
     experimenters = []
+    #when junction object is created, require to pass the whole object (FK) into the query
+    #when junction object is retrieved, only the id of FK object is returned
+    #wired!
     usrexps = UserExperiment.objects.filter(expid = Experiment.objects.filter(expid = para_expid).first()).values()
     for usrexp in usrexps:
         usr_object = Users.objects.filter(usrname = usrexp['usrid_id']).first()
         experimenters.append(usr_object['usrfirstname']+" "+usr_object['usrlastname'])
     return experimenters
 
+"""
+@param : usrname
+@type : number
+
+@return : a list of experiment id having the usr as the experimenter
+@type: list of number
+
+"""
 def get_exp_by_usr(para_usrid):
     experiments = []
+    #when junction object is created, require to pass the whole object (FK) into the query
+    #when junction object is retrieved, only the id of FK object is returned
+    #wired!
     usrexps = UserExperiment.objects.filter(usrid = Users.objects.filter(usrname = para_usrid).first()).values()
     for usrexp in usrexps:
         exp_object = Experiment.objects.filter(expid = exp['expid_id']).first()
