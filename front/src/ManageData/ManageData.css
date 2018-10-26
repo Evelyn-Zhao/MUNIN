@@ -1,0 +1,10 @@
+.ManageApp-Main {
+    width: 100%;
+    padding-left: 200px;
+    display: flex;
+    padding-top: 80px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+}

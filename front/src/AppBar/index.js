@@ -76,6 +76,7 @@ class AppBar extends Component {
     managePersonalInfo = () => {
         this.props.history.push("/editPersonalInfo");
     }
+
     renderButton() {
         if (this.state.user) {
             console.log(this.state);
@@ -84,8 +85,9 @@ class AppBar extends Component {
             const menu = (
                 <Menu>
                     <Menu.Item><Link to ='/editPersonalInfo'>Personal Account</Link></Menu.Item>
-                    <Menu.Item>Help</Menu.Item>
-                    <Menu.Item onClick={this.logout}><Link to ='/'>Log Out</Link></Menu.Item>
+                    <Menu.Item><Icon type="setting" theme="outlined"/>Settings</Menu.Item>
+                    <Menu.Item> <Icon type="info-circle" theme="outlined" /> Help</Menu.Item>
+                    <Menu.Item onClick={this.logout}><Link to ='/'> <Icon type="logout" theme="outlined" /> Log Out </Link></Menu.Item>
                 </Menu>
               );
             return  [
@@ -97,12 +99,10 @@ class AppBar extends Component {
                             <Menu.Item key="2">
                                 <Icon type="appstore" /><span><Link to ='/manageExps'>Manage Experiment</Link></span>
                             </Menu.Item>
-                          
-                            <SubMenu key="sub4" title={<span><Icon type="setting" /><span>Settings</span></span>}>
-                                <Menu.Item key="9"><Link to ='/editPersonalInfo'>Personal Account</Link></Menu.Item>
-                                <Menu.Item key="10">Help</Menu.Item>
-                                <Menu.Item key="11" onClick={this.logout}><Link to ='/'>Log Out</Link></Menu.Item>
-                            </SubMenu>
+                            <Menu.Item key="3">
+                                <Icon type="database" theme="outlined" /><span><Link to ='/manageData'>Manage Data</Link></span>
+                            </Menu.Item>
+                            
                         </Menu>
                         <Dropdown overlay={menu}>
                             <Avatar shape="square" size="large" style={{ color: '#f56a00', backgroundColor: '#fde3cf', paddingLeft: '140px', marginLeft:'200px' }}> <Icon type="user" theme="outlined" />{this.state.user.usrname} </Avatar>
