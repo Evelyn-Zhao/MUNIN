@@ -23,6 +23,7 @@ urlpatterns = [
     path('claimExp', views.claim, name = 'claimExp'),
     path('showPersonalInfo', views.showPersonalInfo, name = 'showPersonalInfo'),
     path('updatePersonalInfo', views.updatePersonalInfo, name = 'updatePersonalInfo'),
+    path('getAllUsers', views.getAllUsers, name = 'getAllUsers'),
     #path('add/',views.add, name='add'),
     #path('add2/<int:a>/<int:b>/',views.old_add2_redirect),
     #path('new_add2/<int:a>/<int:b>/', views.add2, name='add2'),

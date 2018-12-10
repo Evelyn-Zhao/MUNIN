@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { withRouter } from "react-router-dom";
 import { Link } from 'react-router-dom'
 import { Button } from 'antd';
-import { Menu, Dropdown, Radio,  Upload, Icon, message} from 'antd';
+import { Menu, Dropdown, Radio,  Upload, Icon, message, Select, Spin} from 'antd';
+import debounce from 'lodash/debounce';
 
 class ManageData extends Component {
     state = {
@@ -13,13 +14,73 @@ class ManageData extends Component {
         expid: undefined,
         partid: undefined,
         quipid: undefined,
-     
-        value: 1,
+        value_d: 1,
+        data: [],
+        value: [],
+        fetching: false,
     }
 
+    constructor(props) {
+        super(props);
+        this.lastFetchId = 0;
+        this.fetchUser = debounce(this.fetchUser, 800);
+    }
+      
+    fetchUser = async (value) => {
+        console.log('fetching user', value);
+        this.lastFetchId += 1;
+        const fetchId = this.lastFetchId;
+        this.state.data = []
+        this.state.fetching = false;
+        const response = await fetch('/getAllUsers',{
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'include',
+        });
+          /*.then(response => response.json())
+          .then((body) => {
+            if (fetchId !== this.lastFetchId) { // for fetch callback order
+              return;
+            }
+            console.log('body results', body.results)
+            const data = body.results.map(user => ({
+              text: `${user.name.first} ${user.name.last}`,
+              value: user.login.username,
+            }));*/
+
+        const data = await response.json();
+        
+        if (fetchId !== this.lastFetchId) { // for fetch callback order
+            return;
+        }
+        const para = data.data.map(user => ({
+            text: `${user.usrfirstname} ${user.usrlastname}`,
+            value: user.usrname,
+          }))
+        
+        //this.setState({myexps:data["myexps"]})
+        this.state.data = para;
+        this.state.fetching = false;
+        console.log('state.data', this.state.data);
+        //});
+    }
+
+    handleChange = (value) => {
+        console.log('handle change', value);
+        this.state.value = value;
+        console.log('this.state.value', this.state.value);
+        this.state.data = [];
+        this.state.fetching = false;
+    }
+    
+    showData = () => {
+        console.log('it is show data');
+        console.log('show data: state.data', this.state.data);
+
+    }
     handleMenuClick = (e) => {
-        this.state.value = e.target.value
-        this.state.exptype = this.state.types[this.state.value-1]
+        this.state.value_d = e.target.value
+        this.state.exptype = this.state.types[this.state.value_d-1]
     }
 
     addData = () =>{
@@ -33,7 +94,7 @@ class ManageData extends Component {
         this.state.expendd = dateString[1]
     }
 
-    editExp =  async () =>{
+    editData =  async () =>{
         this.state.service = "edit"
     }
 
@@ -50,23 +111,26 @@ class ManageData extends Component {
     }
     renderMain (){
         const Dragger = Upload.Dragger;
-
-const props = {
-  name: 'file',
-  multiple: true,
-  action: '//jsonplaceholder.typicode.com/posts/',
-  onChange(info) {
-    const status = info.file.status;
-    if (status !== 'uploading') {
-      console.log(info.file, info.fileList);
-    }
-    if (status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully.`);
-    } else if (status === 'error') {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-};
+        const Option = Select.Option;
+        const props = {
+            name: 'file',
+            multiple: true,
+            action: '//jsonplaceholder.typicode.com/posts',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            onChange(info) {
+                const status = info.file.status;
+                if (status !== 'uploading') {
+                    console.log(info.file, info.fileList);
+                }
+                if (status === 'done') {
+                    message.success(`${info.file.name} file uploaded successfully.`);
+                } else if (status === 'error') {
+                    message.error(`${info.file.name} file upload failed.`);
+                }
+            },
+        };
         if(this.state.service){
             if(this.state.service == "add"){
                 return[
@@ -121,15 +185,34 @@ const props = {
                 ];
             } else if(this.state.service == "edit"){
                 return[
+
                     <div className = "ManageApp-Main"> 
-                        Manage Experiment Data
+                        Manage Experiment Data (Allow yo manage the data which has the user as an experimenter)
+                                                  
+                        <Select
+                            mode="multiple"
+                            //value={this.state.value}
+                            //labelInValue
+                            placeholder="Select users"
+                            //notFoundContent={this.state.fetching ? <Spin size="small" /> : null}
+                            //filterOption={false}
+                            onSearch={this.fetchUser}
+                            onChange={this.handleChange}
+                            style={{ width: '50%' }}
+                        >
+                            {
+                                this.state.data.map(d => <Option key={d.text}>{d.value}</Option>)
+                            }
+                            
+                        </Select>       
+                                
                     </div>
                 ];
             } else if(this.state.service == "claim"){
                 return[
                     <div className = "ManageApp-Main"> 
-                        Accessible Data
-                    
+                        Accessible Data (Allow user download the accessible data and also make request to download unaccessible data)
+
                     </div>
                 ];
             }else if(this.state.service == "help"){
@@ -157,7 +240,7 @@ const props = {
             <div>
                 <div className="sidenav">
                     <a href="#about" onClick={this.addData}><Icon type="right-circle" /> Upload Experiment Data</a>
-                    <a href="#services" onClick={this.editExp}><Icon type="right-circle" /> Manage Experiment Data</a>
+                    <a href="#services" onClick={this.editData}><Icon type="right-circle" /> Manage Experiment Data</a>
                     <a href="#clients" onClick={this.claimExp} ><Icon type="right-circle" /> Accessible Data</a>
                     <a href="#contact" onClick={this.help}><Icon type="right-circle" />   Help</a>
                 </div>

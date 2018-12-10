@@ -105,6 +105,18 @@ def claim(request):
     else:
         return JsonResponse({'message': 'Login is required'})
 
+'''
+return all users' names in the database for experimenter selection 
+'''
+def getAllUsers(request):
+
+    users = Users.objects.all()
+    a = []
+    for user in users:
+        item = serialise_object(user)
+        a.append(item)
+    return JsonResponse({ 'data': a })
+
 def getAllClaimableExp(request):
     #TODO: only experiments with valide json exp file can be presented
     cexps = []
