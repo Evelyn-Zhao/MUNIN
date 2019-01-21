@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 
 from . import views
 
@@ -24,6 +24,8 @@ urlpatterns = [
     path('showPersonalInfo', views.showPersonalInfo, name = 'showPersonalInfo'),
     path('updatePersonalInfo', views.updatePersonalInfo, name = 'updatePersonalInfo'),
     path('getAllUsers', views.getAllUsers, name = 'getAllUsers'),
+    path('upload', views.upload, name = 'upload'),
+    re_path('^.*$', views.index, name = 'index'),
     #path('add/',views.add, name='add'),
     #path('add2/<int:a>/<int:b>/',views.old_add2_redirect),
     #path('new_add2/<int:a>/<int:b>/', views.add2, name='add2'),

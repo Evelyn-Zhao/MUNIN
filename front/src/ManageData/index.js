@@ -114,11 +114,9 @@ class ManageData extends Component {
         const Option = Select.Option;
         const props = {
             name: 'file',
-            multiple: true,
-            action: '//jsonplaceholder.typicode.com/posts',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            multiple: false,
+            action: '/upload',
+            
             onChange(info) {
                 const status = info.file.status;
                 if (status !== 'uploading') {

@@ -68,3 +68,4 @@ class Data (models.Model):
     exp_partid = models.ForeignKey(ParticipantExperiment, on_delete=models.CASCADE)
     quipid = models.ForeignKey(Equipment, on_delete=models.CASCADE)
     related_data = ArrayField(models.IntegerField())
+    upload = models.FileField(upload_to = 'uploads/%Y/%m/%d/')

@@ -13,6 +13,26 @@ import urllib
 #differences between filter and get: use get when a single object will be returned, use filter when more than one object will be returned
 #when is the returned object serialisable?
 
+def upload(request):
+    
+    print(request.FILES)
+    pe = ParticipantExperiment.objects.filter(exp_partid=1)[0]
+    quip = Equipment.objects.filter(equipid=1)[0]
+    json_object = {
+        "datatype": "testingdatatype",
+        "datadescription": "testingdescription",
+        "exp_partid": pe,
+        "quipid": quip,
+        "related_data": [],
+        "upload": request.FILES['file'],
+    }
+    uploadData = Data.objects.create(**json_object)
+  
+    # uploadData = Data.objects.create(datatype = json_object["datatype"], datadescription = "123456", exp_partid = " " , quipid = 1, related_data = exper_names[0], upload = )
+    uploadData = serialise_object(uploadData)
+    return JsonResponse({'message':uploadData})
+
+
 def getDataList(request):
     data = Data.objects.all()
     #TODO: need to rertrieve the expid outof partexp id
