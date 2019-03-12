@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.db import connection, IntegrityError
 from django.http import HttpResponse, JsonResponse
 from django.http import FileResponse
-from index.models import Users, Experiment, Data, UserExperiment, Outcome, Participant, ParticipantExperiment, Equipment
+from index.models import Users, Experiment, Data, UserExperiment, Outcome, Participant, ParticipantExperiment, Equipment, UploadedData
 from django.conf import settings
 from index.support import *
 import json, os, glob
@@ -15,7 +15,15 @@ import urllib
 
 def upload(request):
     
-    print(request.FILES)
+    #print(request.FILES)
+   
+    #uploadData = Data.objects.create(**json_object)
+    uploadData = UploadedData.objects.create(upload = request.FILES['file'])
+    uploadData = serialise_object(uploadData)
+
+    return JsonResponse({'message':uploadData})
+
+def createData(request):
     pe = ParticipantExperiment.objects.filter(exp_partid=1)[0]
     quip = Equipment.objects.filter(equipid=1)[0]
     json_object = {
@@ -26,10 +34,7 @@ def upload(request):
         "related_data": [],
         "upload": request.FILES['file'],
     }
-    uploadData = Data.objects.create(**json_object)
-  
-    # uploadData = Data.objects.create(datatype = json_object["datatype"], datadescription = "123456", exp_partid = " " , quipid = 1, related_data = exper_names[0], upload = )
-    uploadData = serialise_object(uploadData)
+
     return JsonResponse({'message':uploadData})
 
 
@@ -49,11 +54,12 @@ def downloadData(request):
     id = request.GET['id']
     data = Data.objects.filter(dataid = id).values()[0]
 
-    filetype = data["datatype"].lower()
-    urlname = "Data_"+id+"."+filetype
-    download_file_name = str(data["exp_id"])+"_"+id+"."+filetype
-    full_data_path = settings.DATA_DIRS+urlname
-   
+    #filetype = data["datatype"].lower()
+    #urlname = "Data_"+id+"."+filetype
+    #download_file_name = str(data["exp_id"])+"_"+id+"."+filetype
+    #full_data_path = settings.DATA_DIRS+urlname
+    url = settings.MEDIA_ROOT+'\/'+data["upload"]
+    print(url)
     try:
         dirsCheck(full_data_path)
         file=open(full_data_path,'rb')
@@ -137,6 +143,22 @@ def getAllUsers(request):
         a.append(item)
     return JsonResponse({ 'data': a })
 
+def getAllExp(request):
+    exps = Experiment.objects.all()
+    a = []
+    for exp in exps:
+        item = serialise_object(exp)
+        a.append(item)
+    return JsonResponse({ 'data': a })
+
+def getAllEquip(request):
+    equips = Equipment.objects.all()
+    a = []
+    for equip in equips:
+        item = serialise_object(equip)
+        a.append(item)
+    return JsonResponse({ 'data': a })
+
 def getAllClaimableExp(request):
     #TODO: only experiments with valide json exp file can be presented
     cexps = []
@@ -165,6 +187,11 @@ def getExperimentList(request):
 
 def newexp(request):
     #expid, expname, and exptype are stored in db
+    print(request.POST["exp"])
+    exp = json.loads(request.POST["exp"])
+    print(exp["expname"])
+    return JsonResponse({'message': 'TESTING IN PROCESS'})
+    '''
     json_object = {
         "expname": request.POST["expname"],
         "exptype": request.POST["exptype"],
@@ -213,7 +240,7 @@ def newexp(request):
             del response["_state"]
         print(response)
         return JsonResponse(response)
-    
+    '''
 def register(request):
 
     #TODO: add fisrt name and last name 

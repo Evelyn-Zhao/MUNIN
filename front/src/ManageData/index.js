@@ -2,15 +2,17 @@ import React, { Component } from 'react';
 import { withRouter } from "react-router-dom";
 import { Link } from 'react-router-dom'
 import { Button } from 'antd';
-import { Menu, Dropdown, Radio,  Upload, Icon, message, Select, Spin} from 'antd';
+import { Menu, Dropdown, Radio,  Upload, Icon, Input, message, Select, Spin} from 'antd';
 import debounce from 'lodash/debounce';
+import SingleExpSearch from '../SingleExpSearch';
+import SingleEquipSearch from '../SingleEquipSearch';
 
 class ManageData extends Component {
     state = {
         service: undefined,
-        types: ["Closed","Ongoing","Available"],
+        types: ["Text","Video","Audio","EEG"],
         ddescription: undefined,
-        exptype: "Closed",
+        datatype: "Text",
         expid: undefined,
         partid: undefined,
         quipid: undefined,
@@ -18,6 +20,8 @@ class ManageData extends Component {
         data: [],
         value: [],
         fetching: false,
+        selectedFiles: [],
+        uploadData: undefined,
     }
 
     constructor(props) {
@@ -37,16 +41,6 @@ class ManageData extends Component {
             mode: 'cors',
             credentials: 'include',
         });
-          /*.then(response => response.json())
-          .then((body) => {
-            if (fetchId !== this.lastFetchId) { // for fetch callback order
-              return;
-            }
-            console.log('body results', body.results)
-            const data = body.results.map(user => ({
-              text: `${user.name.first} ${user.name.last}`,
-              value: user.login.username,
-            }));*/
 
         const data = await response.json();
         
@@ -58,19 +52,10 @@ class ManageData extends Component {
             value: user.usrname,
           }))
         
-        //this.setState({myexps:data["myexps"]})
         this.state.data = para;
         this.state.fetching = false;
         console.log('state.data', this.state.data);
         //});
-    }
-
-    handleChange = (value) => {
-        console.log('handle change', value);
-        this.state.value = value;
-        console.log('this.state.value', this.state.value);
-        this.state.data = [];
-        this.state.fetching = false;
     }
     
     showData = () => {
@@ -78,9 +63,10 @@ class ManageData extends Component {
         console.log('show data: state.data', this.state.data);
 
     }
-    handleMenuClick = (e) => {
+    handleChange = (e) => {
+        //TODO: need to be corrected after ui is adjusted
         this.state.value_d = e.target.value
-        this.state.exptype = this.state.types[this.state.value_d-1]
+        this.state.datatype = this.state.types[this.state.value_d-1]
     }
 
     addData = () =>{
@@ -109,9 +95,15 @@ class ManageData extends Component {
     submit = async () => {
         
     }
+
+    add (index) {
+        console("the index is: "+index)
+        this.setState({UploadData:index});
+        console.log("the data id is"+this.state.uploadData)
+     }
     renderMain (){
         const Dragger = Upload.Dragger;
-        const Option = Select.Option;
+     
         const props = {
             name: 'file',
             multiple: false,
@@ -120,7 +112,13 @@ class ManageData extends Component {
             onChange(info) {
                 const status = info.file.status;
                 if (status !== 'uploading') {
+                    print(info.file, info.fileList)
                     console.log(info.file, info.fileList);
+                    console.log(info.file["response"]["updataid"])
+                    //props.add(info.file["response"]["updataid"])
+                    this.setState((state) => {state.uploadData = info.file["response"]["updataid"]})
+                    //.state.uploadData = info.file["response"]["updataid"]
+                    
                 }
                 if (status === 'done') {
                     message.success(`${info.file.name} file uploaded successfully.`);
@@ -129,6 +127,7 @@ class ManageData extends Component {
                 }
             },
         };
+
         if(this.state.service){
             if(this.state.service == "add"){
                 return[
@@ -138,37 +137,37 @@ class ManageData extends Component {
                         <hr/>
                         <div className = "ManageApp-each-row">
                             <label><b>Data Description</b></label>
-                            <input onChange={e => this.setState({ddescription:e.target.value})} className = "Register-input-field" placeholder="Enter Data Description" name="ddescription" required/>
+                            <Input.TextArea rows={4} onChange={e => this.setState({ddescription:e.target.value})} className = "Register-input-field" placeholder="Enter Data Description" name="ddescription" required/>
                         </div>
 
                         
 
                         <div className = "ManageApp-exptype-row">
-                            <label><b>Data Type</b></label>
-                            <Radio.Group style={{ marginLeft: '140px'}} onChange={this.handleMenuClick} defaultValue={1}>
-                                <Radio.Button value={1}> Text </Radio.Button>
-                                <Radio.Button value={2}> Video </Radio.Button>
-                                <Radio.Button value={3}> Audio </Radio.Button>
-                                <Radio.Button value={4}> EEG </Radio.Button>
-                            </Radio.Group>
-                           
+                        <div style={{width:'95%'}}>
+                            <label style={{float: 'left',width:'50%'}}><b>Data Type</b></label>
+
+                            <Select defaultValue="Please select data type" style={{float: 'right',width:'50%'}} onChange={this.handleChange}>
+                                <Select.Option value="text">Text</Select.Option>
+                                <Select.Option value="video">Video</Select.Option>
+                                <Select.Option value="audio">Audio</Select.Option>
+                                <Select.Option value="EEG">EEG</Select.Option>
+                            </Select>      
+
+                        </div>     
                         </div>
 
                         <div className = "ManageApp-each-row">
-                            <label><b>Data is Generated From Experiment</b></label>
-                            <input onChange={e => this.setState({expid:e.target.value})} className = "Register-input-field" placeholder="Enter Which Experiment This Data is Generated From" name="expid" required/>
+                            <label><b>Experiment generates this data</b></label>
+                            <SingleExpSearch/>
                         </div>
+
 
                         <div className = "ManageApp-each-row">
-                            <label><b>Data is Collected From Participant</b></label>
-                            <input onChange={e => this.setState({partid:e.target.value})} className = "Register-input-field" placeholder="Enter Which Paricipant This Data is Collected From" name="partid" required/>
+                            <label><b>Equipment used to collect data</b></label>
+                            <SingleEquipSearch/>
                         </div>
 
-                        <div className = "ManageApp-each-row">
-                            <label><b>Data is Collected By Using Equipment</b></label>
-                            <input onChange={e => this.setState({quipid:e.target.value})} className = "Register-input-field" placeholder="Enter Which Equipment Was Used to Collected This Data" name="quipid" required/>
-                        </div>
-
+                        
                         <div>
                             <Dragger {...props}>
                                 <p className="ant-upload-drag-icon">
@@ -185,25 +184,8 @@ class ManageData extends Component {
                 return[
 
                     <div className = "ManageApp-Main"> 
-                        Manage Experiment Data (Allow yo manage the data which has the user as an experimenter)
-                                                  
-                        <Select
-                            mode="multiple"
-                            //value={this.state.value}
-                            //labelInValue
-                            placeholder="Select users"
-                            //notFoundContent={this.state.fetching ? <Spin size="small" /> : null}
-                            //filterOption={false}
-                            onSearch={this.fetchUser}
-                            onChange={this.handleChange}
-                            style={{ width: '50%' }}
-                        >
-                            {
-                                this.state.data.map(d => <Option key={d.text}>{d.value}</Option>)
-                            }
-                            
-                        </Select>       
-                                
+                        Manage Experiment Data (Allow you manage the data which has the user as an experimenter)     
+                  
                     </div>
                 ];
             } else if(this.state.service == "claim"){

@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { withRouter } from "react-router-dom";
 import './ManageExps.css'
 import { Link } from 'react-router-dom'
-import { Button } from 'antd';
-import { Menu, Dropdown, Icon, message, Radio, DatePicker, Select, Spin} from 'antd';
-
-class ManageExps extends Component {
+import SearchInput from '../SearchInput'
+import { Menu, Dropdown, Icon, message, Radio, DatePicker, Select, Spin, Input, Cascader} from 'antd';
+import {Drawer, Form, Col, Row, Button } from 'antd';
+import NewExperimentForm from '../NewExperimentForm';
+export default class ManageExps extends Component {
 
     state = {
         service: undefined,
@@ -19,11 +20,14 @@ class ManageExps extends Component {
         cexps: undefined,
         myexps: undefined,
         value: 1,
+        visible: false,
     }
 
     handleMenuClick = (e) => {
-        this.state.value = e.target.value
-        this.state.exptype = this.state.types[this.state.value-1]
+        console.log(e)
+        
+        
+        this.state.exptype = e[0]
     }
 
     addExp = () =>{
@@ -109,16 +113,26 @@ class ManageExps extends Component {
         }
     }
 
+    showDrawer = () => {
+        this.setState({
+          visible: true,
+        });
+      };
+
+      onClose = () => {
+        this.setState({
+          visible: false,
+        });
+      };
+    
     renderMain (){
-        const menu = (
-            <Menu onClick={this.handleMenuClick}>
-              <Menu.Item key="1"><Icon type="right-square" /> Closed</Menu.Item>
-              <Menu.Item key="2"><Icon type="right-square" /> Ongoing</Menu.Item>
-              <Menu.Item key="3"><Icon type="right-square" /> Available</Menu.Item>
-            </Menu>
-          );
+    
+        const MainForm = Form.create()(NewExperimentForm)
         const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
- 
+        
+          
+       
+
         if(this.state.service){
             if(this.state.service == "add"){
                 return[
@@ -126,49 +140,21 @@ class ManageExps extends Component {
                         <h1>Create New Experiment Page</h1>
                         <p>Please fill in the following form to create a new experiment</p>
                         <hr/>
-                        <div className = "ManageApp-each-row">
-                            <label><b>Experiment Name</b></label>
-                            <input onChange={e => this.setState({expname:e.target.value})} className = "Register-input-field" placeholder="Enter Experiment Name" name="expname" required/>
-                        </div>
-                        
-                        <div className = "ManageApp-each-row">
-                        
-                            <label><b>Experiment Period</b></label>
-                            <RangePicker onChange={this.selectDate}/>
-                            
-                        </div>
-
-                        <div className = "ManageApp-each-row">
-                            <label><b>Experiment Description</b></label>
-                            <input onChange={e => this.setState({expdescription:e.target.value})} className = "Register-input-field" placeholder="Enter Experiment Description" name="expdescription" required/>
-                        </div>
-                        <div className = "ManageApp-each-row">
-                            <label><b>Experimenters (separate the names by comma (,))</b></label>
-                            <input onChange={e => this.setState({expers:e.target.value})} className = "Register-input-field" placeholder="Enter Experimenter Names" name="expdescription" required/>
-                        </div>
-                        <div className = "ManageApp-exptype-row">
-                            <label><b>Experiment Type</b></label>
-                            <Radio.Group style={{ marginLeft: '100px'}} onChange={this.handleMenuClick} defaultValue={1}>
-                                <Radio.Button value={1}> Closed </Radio.Button>
-                                <Radio.Button value={2}> Ongoing </Radio.Button>
-                                <Radio.Button value={3}> Available </Radio.Button>
-                            </Radio.Group>
-                           
-                        </div>
-        
-                        <Button style={{ marginTop: '40px', width: '200px',marginBottom: '50px'}}onClick = {this.submit}>submit</Button>
+                        <MainForm/>
                     </div>
                 ];
             } else if(this.state.service == "edit"){
                 return[
                     <div className = "ManageApp-Main"> 
                         <h2>Edit My Experiments</h2>
+                        
                         <table>
                             <tbody>
                                 <tr >
                                     <th className="Exp-th">Experiment Name</th>
                                     <th className="Exp-th">Type</th>
                                     <th className="Exp-th">Click to Edit</th>
+                                    <th className="Exp-th"></th>
                                 </tr>
                                 {
                                     this.state.myexps && this.state.myexps.map(d =>                         
@@ -177,6 +163,7 @@ class ManageExps extends Component {
                                         <td className="ManageApp-claim-expname"><Link to={'/experiments/' + d.expid}>{d.expname}</Link></td>
                                         <td className="Exp-th">{d.exptype}</td>
                                         <td className="Exp-th"><a> <Icon type="edit" theme="filled" /> Edit </a></td>
+                                        <td className="Exp-th"><a> <Icon type="folder-add" theme="filled" /> Data Entry </a></td>
                                     </tr>)
                                 }
                             </tbody>
@@ -187,6 +174,7 @@ class ManageExps extends Component {
             } else if(this.state.service == "claim"){
                 return[
                     <div className = "ManageApp-Main"> 
+                    <h2>Claim Open Experiments</h2>
                     <table>
                     <tbody>
                          <tr >
@@ -233,12 +221,13 @@ class ManageExps extends Component {
     }
 
     render(){
+       
         return(
             <div>
                 <div className="sidenav">
                     <a href="#about" onClick={this.addExp}><Icon type="right-circle" /> Add New Experiment</a>
-                    <a href="#services" onClick={this.editExp}><Icon type="right-circle" /> Manage Experiments</a>
-                    <a href="#clients" onClick={this.claimExp} ><Icon type="right-circle" /> Claim Open Experiment</a>
+                    <a href="#services" onClick={this.editExp}><Icon type="right-circle" /> Manage My Experiments</a>
+                    <a href="#clients" onClick={this.claimExp} ><Icon type="right-circle" /> Claimable Experiments</a>
                     <a href="#contact" onClick={this.help}><Icon type="right-circle" />   Help</a>
                 </div>
                 
@@ -251,4 +240,5 @@ class ManageExps extends Component {
 
         );
     }
-}export default withRouter(ManageExps);
+}
+

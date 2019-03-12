@@ -59,6 +59,9 @@ class Equipment (models.Model):
     equipid = models.AutoField(primary_key=True) 
     equipname = models.CharField(max_length=200)
 
+class UploadedData (models.Model):
+    updataid = models.AutoField(primary_key=True)
+    upload = models.FileField(upload_to = 'uploads/%Y/%m/%d/')
 
 class Data (models.Model):
     dataid = models.AutoField(primary_key=True) 
@@ -69,3 +72,5 @@ class Data (models.Model):
     quipid = models.ForeignKey(Equipment, on_delete=models.CASCADE)
     related_data = ArrayField(models.IntegerField())
     upload = models.FileField(upload_to = 'uploads/%Y/%m/%d/')
+    #uploadRef = models.ForeignKey(UploadedData, on_delete=models.CASCADE)
+

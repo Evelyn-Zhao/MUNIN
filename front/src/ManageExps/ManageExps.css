@@ -36,11 +36,12 @@
 .ManageApp-each-row{
     font-size: 14px;
     width: 50%;
-    padding: 10px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: left;
+   
 }
 
 .ManageApp-exptype-row{
@@ -50,6 +51,7 @@
     flex-direction: row;
     justify-content: center;
     align-items: left;
+    margin-bottom: '25px';
 }
 
 .Exp-table{
