@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import background1 from './cubes_1.jpg';
+import Home from './Home';
 
 class App extends Component {
   async componentDidMount() {
@@ -15,17 +16,23 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
-       
-        <header className="App-header">
-         {/*<AppBackground/>*/}
-         
-         <p className = "App-title" style={{zIndex: 10}}> MUNIN </p>
-         
-        </header>
-        <p className="App-intro">
+      <div>
+        <div>
+        
+          <header className="App-header">
+          {/*<AppBackground/>*/}
+            <div className="App-content">
+              <div className = "App-title">
+                <span className = "App-title1" > MUNIN </span>
+                <p>HCC Experiment Data Management Platform</p>
+              </div>
+              <img className="App-raven" src="https://www.freeiconspng.com/uploads/raven-png-photo-10.png" align= "right"/>
+            </div>
+          </header>
           
-        </p>
+        </div>
+
+        <Home/>
       </div>
     );
   }

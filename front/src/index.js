@@ -32,7 +32,7 @@ ReactDOM.render((
             <Route path='/data' component={Data}/>
             <Route path='/manageData' component={ManageData}/>
             <Route path='/manageExps' component={ManageExps}/>
-            <Route psth='/editPersonalInfo' component={EditPersonalInfo}/>
+            <Route path='/editPersonalInfo' component={EditPersonalInfo}/>
         </Switch>
         </div>
     </BrowserRouter>

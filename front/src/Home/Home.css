@@ -1,0 +1,51 @@
+.intro-section{
+ 
+    line-height: 1.5;
+    color: #212529;
+    text-align: left;
+    padding-top: 150px;
+    padding-bottom: 130px;
+    padding-left: 150px;
+	padding-right: 150px;
+}
+
+.intro-text{
+    padding-right: 40px;
+}
+.munin-section{
+    line-height: 1.5;
+    color: #212529;
+    text-align: left;
+    padding-left: 150px;
+	padding-right: 150px;
+}
+
+.munin-text{
+    padding-left: 40px;
+}
+.intro-pic{
+    width:505px;
+}
+
+.container{
+    width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.row{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.heaingtext{
+    font-size: 26px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 45px;
+    letter-spacing: 6px;
+    padding-right: 60px;
+}

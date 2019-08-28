@@ -10,7 +10,7 @@
   left: 30px;
   height: 100%;
   font-size: 3em;
-  color:white;
+  color:whitesmoke;
   font-weight: 600;
 }
 
@@ -74,9 +74,6 @@
   max-height: 120px;
   min-width: 180px;
   list-style-type: none;
-  margin: 0;
-  padding: 0;
-  
 }
 
 .AppBar-username-label li{
